@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from 'src/profile/profile.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Playlist } from './playlist.entity';
 import { createPlaylistDto } from './dto/playlist.dto';
 
@@ -14,8 +14,8 @@ export class PlaylistService {
     private readonly profileRepo: Repository<Profile>,
   ) {}
 
-  public getPlaylist() {
-    return this.playlistRepo.find({
+  public async getPlaylist() {
+    return await this.playlistRepo.find({
       relations: {
         profile: true
       }

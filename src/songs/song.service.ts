@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Songs } from './song.entity';
 import { DataSource, Repository } from 'typeorm';
 import { createSongDto, updateSongDto } from './dto/song.dto';
-import { platform } from 'os';
 import { Playlist } from 'src/playlist/playlist.entity';
 
 @Injectable()
