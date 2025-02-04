@@ -4,10 +4,14 @@ import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Profile } from 'src/profile/profile.entity';
+import { PaginationService } from 'src/pagination/pagination.service';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Profile])],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, PaginationService],
 })
-export class UserModule {}
+export class UserModule {
+  constructor(public dataSource: DataSource) {}
+}
