@@ -36,6 +36,11 @@ export class UserService {
     // return await this.users.find(user => user.username === username)
   }
 
+  async findToken(token: string): Promise<User> {
+    return await  this.userRepo.findOne({where: {refresh_key: token}})
+    // return await this.users.find(user => user.username === username)
+  }
+
   async createUser(user: CreateUserDto) {
     const existingUser = await this.userRepo.findOne({where: {username: user.username}});
     if(existingUser) throw new BadRequestException('User already exist with same username.');
@@ -49,5 +54,13 @@ export class UserService {
       message: 'User register successfully.',
       id : newUser.id
     }
+  }
+  async updateUser(id, data) {
+    return await this.userRepo.update(id, {refresh_key: data});
+  }
+
+  async findEmail(email: string) {
+    const user = await this.userRepo.findOne({where: {email}})
+    return user
   }
 }

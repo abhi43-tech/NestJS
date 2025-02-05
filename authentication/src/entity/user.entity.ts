@@ -8,7 +8,7 @@ export class User {
   @Column({
     type: 'varchar',
   })
-  name: string;
+  email: string;
 
   @Column({
     type: 'varchar',
@@ -19,4 +19,9 @@ export class User {
     type: 'varchar',
   })
   password: string;
+
+  @Column({
+    select: false
+  })
+  refresh_key?: string
 }

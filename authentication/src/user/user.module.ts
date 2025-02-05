@@ -6,10 +6,13 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UserController } from './user.controller';
 import { PasswordService } from 'src/password/password.service';
 import { JwtService } from '@nestjs/jwt';
+import googleOAuthConfig from 'src/config/google-oauth.config';
+import { ConfigModule } from '@nestjs/config';
+import { GoogleStrategy } from 'src/auth/google.strategy';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), forwardRef(() => AuthModule)],
-  providers: [UserService, PasswordService, JwtService],
+  imports: [TypeOrmModule.forFeature([User]), forwardRef(() => AuthModule), ConfigModule.forFeature(googleOAuthConfig)],
+  providers: [UserService, PasswordService, JwtService, GoogleStrategy],
   controllers: [UserController],
   exports: [UserService]
 })
