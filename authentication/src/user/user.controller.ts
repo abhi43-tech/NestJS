@@ -5,7 +5,9 @@ import {
   UseGuards,
   Request,
   Response,
-  Body
+  Body,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { LocalGuard } from '../auth/local-auth.guard';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
@@ -15,8 +17,8 @@ import { UserService } from './user.service';
 import { CreateUserDto } from 'src/dto/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtRefreshGuard } from 'src/auth/refresh.guard';
-import { AuthorizationGuard } from 'src/auth/authorization.guard';
 import { GoogleGuard } from 'src/auth/google.guard';
+import { UserEntity } from './user.entity';
 
 @Controller('user')
 export class UserController {
@@ -29,21 +31,23 @@ export class UserController {
   @UseGuards(LocalGuard)
   @Post('login')
   async login(@Request() req, @Response() res) {
-    const { access_token, refresh_token } = await this.authService.login(req.user);
-  
+    const { access_token, refresh_token } = await this.authService.login(
+      req.user,
+    );
+
     res.cookie('Access', access_token, {
       httpOnly: true,
       sameSite: 'None',
       secure: true,
-      maxAge: 10000
+      maxAge: 10000,
     });
     res.cookie('Refresh', refresh_token, {
       httpOnly: true,
       sameSite: 'None',
       secure: true,
-      maxAge: 24 * 60 * 60 * 3600
-    })
-    res.send('Logged In.')
+      maxAge: 24 * 60 * 60 * 3600,
+    });
+    res.send('Logged In.');
   }
 
   @Post('register')
@@ -62,26 +66,37 @@ export class UserController {
   @Post('refresh')
   async refreshToken(@Request() req, @Response() res) {
     const { access_token } = await this.authService.generateTokens(req.user);
-  
+
     res.cookie('Access', access_token, {
       httpOnly: true,
       sameSite: 'None',
       secure: true,
-      maxAge: 100000
+      maxAge: 100000,
     });
 
     // const payload = this.jwtService.verify(refreshToken, { secret: "REFRESH SECRET" });
-    return res.json({access_token});
+    return res.json({ access_token });
   }
 
-  @UseGuards(GoogleGuard)
   @Get('google/login')
+  @UseGuards(GoogleGuard)
   googleLogin() {}
 
-  @UseGuards(GoogleGuard)
   @Get('google/callback')
+  @UseGuards(GoogleGuard)
   async googleCallback(@Request() req, @Response() res) {
-    const Response = await this.authService.login(req.user)
-    res.redirect("http://localhost:4000")
+    const Response = await this.authService.login(req.user);
+    res.redirect(`http://localhost:3001?token=${Response.access_token}`);
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('serializer')
+  findOne(): UserEntity {
+    return new UserEntity({
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      password: 'password',
+    });
   }
 }

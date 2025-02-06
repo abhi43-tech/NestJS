@@ -55,12 +55,27 @@ export class UserService {
       id : newUser.id
     }
   }
+
   async updateUser(id, data) {
     return await this.userRepo.update(id, {refresh_key: data});
   }
 
   async findEmail(email: string) {
-    const user = await this.userRepo.findOne({where: {email}})
-    return user
+    const user = await this.userRepo.findOne({where: {email: email}})
+    if(!user) return null
+    return user;
+  }
+
+  async createGoogleUser(user: CreateUserDto) {
+    const hashPass = await this.passwordService.hashPassword(user.password)
+    const newUser = await this.userRepo.create({
+      ...user,
+      password: hashPass,
+    });
+    await this.userRepo.save(newUser)
+    return {
+      message: 'User register successfully.',
+      id : newUser.id
+    }
   }
 }

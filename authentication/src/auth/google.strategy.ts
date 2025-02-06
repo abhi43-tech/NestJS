@@ -16,7 +16,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     super({
       clientID: googleConfig.clientId,
       clientSecret: googleConfig.clientSecret,
-      callbackUrl: googleConfig.callbackURL,
+      callbackURL: googleConfig.callbackURL,
       scope: ['email', 'profile'],
     });
   }
@@ -27,14 +27,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: VerifyCallback,
   ) {
-    console.log(this.googleConfig.callbackURL)
+    console.log(profile.emails[0].value)
     const user = await this.authService.validateGoogleUser({
       email: profile.emails[0].value,
       username: profile.name.givenName,
-      name: profile.name.givenName,
       password: ""
     })
-
+    console.log(user)
     done(null, user);
   }
 }
