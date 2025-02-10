@@ -3,10 +3,9 @@ import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { UploadModule } from './upload/upload.module';
-import { RetrieveModule } from './retrieveFile/retrieve.module';
 
 @Module({
-  imports: [UploadModule, RetrieveModule, ConfigModule.forRoot({ isGlobal: true })],
+  imports: [UploadModule, ConfigModule.forRoot({ isGlobal: true })],
   controllers: [AppController],
   providers: [AppService],
 })
